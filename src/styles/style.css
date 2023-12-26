@@ -1,7 +1,17 @@
+@font-face {
+  font-family: 'MaplestoryOTFBold';
+  src: url('../../public/static/fonts/Bazzi.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 #app {
   width: 800px;
   height: 500px;
   margin: 0 auto;
   position: relative;
-  background-color: #f9f9f9;
+}
+
+body {
+  font-family: MaplestoryOTFBold;
 }
