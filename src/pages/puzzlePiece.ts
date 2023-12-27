@@ -7,20 +7,13 @@ type PuzzlePieceProp = {
 
 export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
   const $puzzlePieceContent = document.createElement('canvas');
-
-  $puzzlePieceContent.setAttribute(
-    'style',
-    '{position:absolute; top:100; left:200;}'
-  );
+  $app?.appendChild($puzzlePieceContent);
 
   const canvas = new fabric.Canvas($puzzlePieceContent, {
-    selection: false,
-    targetFindTolerance: 2,
     width: 800,
     height: 500,
+    selection: false,
   });
-
-  canvas.on('object:moving', e => console.log(e.target, 'moved!'));
 
   /**
    * 헤더
@@ -42,6 +35,7 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
   const header = new fabric.Group([headerRect, headerText], {
     left: 0,
     top: 0,
+    selectable: false,
   });
 
   canvas.add(header);
@@ -86,12 +80,13 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
         img.set({
           left: 140,
           top: 150,
+          selectable: false,
         });
 
         canvas.add(img);
       },
       {
-        crossOrigin: 'anonymouse',
+        crossOrigin: 'anonymous',
       }
     );
 
@@ -104,9 +99,6 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
             left: 530,
             top: 130 + idx * 50,
           });
-
-          img.perPixelTargetFind = true;
-          img.hasControls = img.hasBorders = false;
 
           canvas.add(img);
         },
@@ -145,10 +137,4 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
     fontFamily: 'MaplestoryOTFBold',
   });
   canvas.add(remainingText);
-
-  const render = () => {
-    $app?.appendChild($puzzlePieceContent);
-  };
-
-  render();
 }

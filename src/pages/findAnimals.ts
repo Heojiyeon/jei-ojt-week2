@@ -20,12 +20,10 @@ export default function FindAnimalsPage({
   $questionContent.setAttribute('width', '800');
   $questionContent.setAttribute('height', '500');
 
-  /**
-   * canvas image 생성
-   * canvas 내부에 생성된 요소에는 직접적인 접근 불가
-   * 정답 이미지의 위치를 통해 해당 요소가 클릭되었는 지 여부를 확인
-   *
-   */
+  $app?.appendChild($questionTitle);
+  $app?.appendChild($questionContent);
+  $app?.appendChild($questionRemaining);
+
   const canvas = new fabric.Canvas($questionContent);
 
   const createQuestions = (currentOrder: number) => {
@@ -131,12 +129,4 @@ export default function FindAnimalsPage({
       }, 1000);
     }
   });
-
-  const render = () => {
-    $app?.appendChild($questionTitle);
-    $app?.appendChild($questionContent);
-    $app?.appendChild($questionRemaining);
-  };
-
-  render();
 }
