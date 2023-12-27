@@ -1,13 +1,21 @@
 import { fabric } from 'fabric';
 import { PuzzleQuestions } from '../constants/questions';
+import { push } from '../utils/router';
 
 type PuzzlePieceProp = {
   $app: HTMLElement | null;
 };
 
 export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
+  let currentOrder = 0;
+
+  const $puzzlePieceTitle = document.createElement('div');
   const $puzzlePieceContent = document.createElement('canvas');
+  const $puzzlePieceRemaining = document.createElement('div');
+
+  $app?.appendChild($puzzlePieceTitle);
   $app?.appendChild($puzzlePieceContent);
+  $app?.appendChild($puzzlePieceRemaining);
 
   const canvas = new fabric.Canvas($puzzlePieceContent, {
     width: 800,
@@ -15,89 +23,51 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
     selection: false,
   });
 
-  /**
-   * 헤더
-   */
-  const headerRect = new fabric.Rect({
-    width: 800,
-    height: 35,
-    fill: '#E5001A',
-  });
+  const createPuzzlePieces = (currentOrder: number) => {
+    // 모든 문제를 풀었을 때 결과 페이지로 이동
+    if (currentOrder >= PuzzleQuestions.length) {
+      push('/result');
+      return;
+    }
 
-  const headerText = new fabric.Text('JEI 동물 퍼즐', {
-    fontSize: 15,
-    fill: '#FFFFFF',
-    top: 10,
-    left: 10,
-    fontFamily: 'MaplestoryOTFBold',
-  });
+    $puzzlePieceTitle.innerText = `${currentOrder + 1}. ${
+      PuzzleQuestions[currentOrder].title
+    }를 완성해주세요.`;
 
-  const header = new fabric.Group([headerRect, headerText], {
-    left: 0,
-    top: 0,
-    selectable: false,
-  });
+    $puzzlePieceRemaining.innerText = `남은 문제 수 : ${
+      PuzzleQuestions.length - currentOrder
+    }`;
 
-  canvas.add(header);
+    /**
+     * 문제 이미지
+     */
+    const totalQuestionRect = new fabric.Rect({
+      width: 700,
+      height: 297,
+      fill: '#FFF8F8',
+      top: 90,
+      left: 50,
+    });
 
-  /**
-   * 문제 제목
-   */
-  const titleText = new fabric.Text('1. 곰을 완성해주세요.', {
-    fontSize: 20,
-    top: 60,
-    left: 30,
-    fontFamily: 'MaplestoryOTFBold',
-  });
-  canvas.add(titleText);
+    // 문제 wrapper
+    const questionRect = new fabric.Rect({
+      width: 300,
+      height: 260,
+      fill: '#FFFFFF',
+      top: 110,
+      left: 70,
+    });
 
-  /**
-   * 문제 이미지
-   */
-  const totalQuestionRect = new fabric.Rect({
-    width: 700,
-    height: 297,
-    fill: '#FFF8F8',
-    top: 90,
-    left: 50,
-  });
-
-  // 문제 wrapper
-  const questionRect = new fabric.Rect({
-    width: 300,
-    height: 260,
-    fill: '#FFFFFF',
-    top: 110,
-    left: 70,
-  });
-
-  // 문제 이미지
-  PuzzleQuestions.map(puzzleQuestion => {
-    // 문제 핵심 이미지
-    fabric.Image.fromURL(
-      `../../public/images/puzzlePiece/${puzzleQuestion.answer}-cropped.png`,
-      function (img) {
-        img.set({
-          left: 140,
-          top: 150,
-          selectable: false,
-        });
-
-        canvas.add(img);
-      },
-      {
-        crossOrigin: 'anonymous',
-      }
-    );
-
-    // 선택지 이미지
-    puzzleQuestion.selections.map((selection, idx) => {
+    // 문제 이미지
+    PuzzleQuestions.map(puzzleQuestion => {
+      // 문제 핵심 이미지
       fabric.Image.fromURL(
-        `../../public/images/puzzlePiece/${selection.answer}-answer.png`,
+        `../../public/images/puzzlePiece/${puzzleQuestion.answer}-cropped.png`,
         function (img) {
           img.set({
-            left: 530,
-            top: 130 + idx * 50,
+            left: 140,
+            top: 150,
+            selectable: false,
           });
 
           canvas.add(img);
@@ -106,35 +76,44 @@ export default function PuzzlePiecePage({ $app }: PuzzlePieceProp) {
           crossOrigin: 'anonymous',
         }
       );
+
+      // 선택지 이미지
+      puzzleQuestion.selections.map((selection, idx) => {
+        fabric.Image.fromURL(
+          `../../public/images/puzzlePiece/${selection.answer}-answer.png`,
+          function (img) {
+            img.set({
+              left: 530,
+              top: 130 + idx * 50,
+            });
+
+            canvas.add(img);
+          },
+          {
+            crossOrigin: 'anonymous',
+          }
+        );
+      });
     });
-  });
 
-  // 선택지 이미지
-  const selectionsRect = new fabric.Rect({
-    width: 330,
-    height: 260,
-    fill: '#FFF8F8',
-    top: 110,
-    left: 400,
-  });
+    // 선택지 이미지
+    const selectionsRect = new fabric.Rect({
+      width: 330,
+      height: 260,
+      fill: '#FFF8F8',
+      top: 110,
+      left: 400,
+    });
 
-  const question = new fabric.Group([questionRect, selectionsRect], {
-    left: 70,
-    top: 110,
-    subTargetCheck: false,
-  });
+    const question = new fabric.Group([questionRect, selectionsRect], {
+      left: 70,
+      top: 110,
+      subTargetCheck: false,
+    });
 
-  canvas.add(totalQuestionRect);
-  canvas.add(question);
+    canvas.add(totalQuestionRect);
+    canvas.add(question);
+  };
 
-  /**
-   * 문제 남은 수
-   */
-  const remainingText = new fabric.Text(`남은 문제 수 : `, {
-    fontSize: 20,
-    top: 403,
-    left: 640,
-    fontFamily: 'MaplestoryOTFBold',
-  });
-  canvas.add(remainingText);
+  createPuzzlePieces(currentOrder);
 }
