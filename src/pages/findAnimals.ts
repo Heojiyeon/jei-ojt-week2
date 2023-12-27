@@ -57,7 +57,6 @@ export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
   $questionContent.addEventListener('click', e => {
     const { answerLocX, answerLocY } = Questions[currentOrder];
     const { pageX, pageY } = e;
-    console.log(answerLocX, answerLocY, pageX, pageY);
 
     // 정/오답에 대한 피드백
     if (
@@ -66,10 +65,61 @@ export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
       pageY > answerLocY - 50 &&
       pageY < answerLocY + 50
     ) {
-      console.log('정답입니다!');
       createQuestions((currentOrder += 1));
+
+      const feedbackRect = new fabric.Rect({
+        width: 120,
+        height: 35,
+        originX: 'center',
+        originY: 'center',
+        fill: '#DDE2FB',
+      });
+
+      const feedbackText = new fabric.Text('정답입니다', {
+        fontSize: 15,
+        originX: 'center',
+        originY: 'center',
+      });
+
+      const feedbackBubble = new fabric.Group([feedbackRect, feedbackText], {
+        left: answerLocX - 180,
+        top: answerLocY - 90,
+      });
+
+      canvas.add(feedbackBubble);
+      canvas.setActiveObject(feedbackBubble);
+
+      setTimeout(() => {
+        canvas.remove(canvas.getActiveObject()!);
+        return;
+      }, 1000);
     } else {
-      console.log('오답입니다');
+      const feedbackRect = new fabric.Rect({
+        width: 120,
+        height: 35,
+        originX: 'center',
+        originY: 'center',
+        fill: '#FFCED3',
+      });
+
+      const feedbackText = new fabric.Text('오답입니다', {
+        fontSize: 15,
+        originX: 'center',
+        originY: 'center',
+      });
+
+      const feedbackBubble = new fabric.Group([feedbackRect, feedbackText], {
+        left: pageX - 190,
+        top: pageY - 85,
+      });
+
+      canvas.add(feedbackBubble);
+      canvas.setActiveObject(feedbackBubble);
+
+      setTimeout(() => {
+        canvas.remove(canvas.getActiveObject()!);
+        return;
+      }, 1000);
     }
   });
 
