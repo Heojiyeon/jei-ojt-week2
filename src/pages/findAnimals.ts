@@ -4,9 +4,13 @@ import { push } from '../utils/router';
 
 type FindAnimalsPageProp = {
   $app: HTMLElement | null;
+  setCountOfCorrect: () => void;
 };
 
-export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
+export default function FindAnimalsPage({
+  $app,
+  setCountOfCorrect,
+}: FindAnimalsPageProp) {
   let currentOrder = 0;
 
   const $questionTitle = document.createElement('div');
@@ -34,7 +38,9 @@ export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
     $questionTitle.innerText = `${currentOrder + 1}. ${
       Questions[currentOrder].title
     }를 찾아주세요.`;
-    $questionRemaining.innerText = `남은 문제 수 : ${9 - currentOrder}`;
+    $questionRemaining.innerText = `남은 문제 수 : ${
+      Questions.length - currentOrder
+    }`;
 
     Questions[currentOrder].selections.map(question => {
       fabric.Image.fromURL(
@@ -65,7 +71,7 @@ export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
       pageY > answerLocY - 50 &&
       pageY < answerLocY + 50
     ) {
-      createQuestions((currentOrder += 1));
+      setCountOfCorrect();
 
       const feedbackRect = new fabric.Rect({
         width: 120,
@@ -121,6 +127,8 @@ export default function FindAnimalsPage({ $app }: FindAnimalsPageProp) {
         return;
       }, 1000);
     }
+
+    createQuestions((currentOrder += 1));
   });
 
   const render = () => {

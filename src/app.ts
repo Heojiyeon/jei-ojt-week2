@@ -10,6 +10,13 @@ type AppProp = {
 
 // page 생성 및 라우팅
 export default function App({ $app }: AppProp) {
+  //정답 개수
+  let countOfCorrect = 0;
+
+  const setCountOfCorrect = () => {
+    countOfCorrect += 1;
+  };
+
   // 라우터 생성 함수
   const createRoute = () => {
     const { pathname } = window.location;
@@ -18,13 +25,14 @@ export default function App({ $app }: AppProp) {
       MainPage({ $app });
     } else if (pathname === '/find-animals') {
       $app!.innerHTML = '';
-      FindAnimalsPage({ $app });
+      countOfCorrect = 0;
+      FindAnimalsPage({ $app, setCountOfCorrect });
     } else if (pathname === '/puzzle-piece') {
       $app!.innerHTML = '';
       PuzzlePiecePage({ $app });
     } else if (pathname === '/result') {
       $app!.innerHTML = '';
-      ResultPage({ $app });
+      ResultPage({ $app, countOfCorrect });
     }
   };
 
