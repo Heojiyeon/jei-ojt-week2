@@ -44,9 +44,10 @@ export default function FindAnimalsPage({
 
     Questions[currentOrder].selections.map(question => {
       fabric.Image.fromURL(
-        `../../public/images/${question.title}.png`,
+        `../../public/images/findAnimals/${question.title}.png`,
 
         function (img) {
+          console.log(img.toObject());
           const image = img
             .set({ left: question.locX, top: question.locY })
             .scale(0.15);
@@ -97,6 +98,7 @@ export default function FindAnimalsPage({
 
       setTimeout(() => {
         canvas.remove(canvas.getActiveObject()!);
+        createQuestions((currentOrder += 1));
         return;
       }, 1000);
     } else {
@@ -124,11 +126,10 @@ export default function FindAnimalsPage({
 
       setTimeout(() => {
         canvas.remove(canvas.getActiveObject()!);
+        createQuestions((currentOrder += 1));
         return;
       }, 1000);
     }
-
-    createQuestions((currentOrder += 1));
   });
 
   const render = () => {

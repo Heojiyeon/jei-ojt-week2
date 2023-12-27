@@ -1,5 +1,62 @@
+/** 동물 퍼즐 문제
+ * {
+ *
+ * }
+ */
+
+interface PuzzleSelection {
+  answer: string;
+  locX: number;
+  locY: number;
+}
+interface PuzzleQuestion {
+  order: number;
+  title: string;
+  answer: string;
+  answerLocX: number;
+  answerLocY: number;
+  selections: PuzzleSelection[];
+}
+
+export const PuzzleQuestions: PuzzleQuestion[] = [
+  {
+    order: 1,
+    title: '곰',
+    answer: 'bear',
+    answerLocX: 150,
+    answerLocY: 150,
+    selections: [
+      {
+        answer: 'bear',
+        locX: 530,
+        locY: 130,
+      },
+      {
+        answer: 'cat',
+        locX: 530,
+        locY: 180,
+      },
+      {
+        answer: 'octopus',
+        locX: 530,
+        locY: 320,
+      },
+      {
+        answer: 'rabbit',
+        locX: 530,
+        locY: 370,
+      },
+      {
+        answer: 'squirrel',
+        locX: 530,
+        locY: 420,
+      },
+    ],
+  },
+];
+
 /**
- * 문제
+ * 동물 찾기 문제
  * {
  *  정답 위치
  *  선택형 문항의 위치
