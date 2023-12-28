@@ -3,6 +3,7 @@ import { PuzzleQuestions } from '../constants/questions';
 import { push } from '../utils/router';
 import Header from '../components/common/Header';
 import { ttsSpeech } from '../utils/tts';
+import FeedbackBubble from '../components/common/FeedbackBubble';
 
 type PuzzlePieceProp = {
   $app: HTMLElement | null;
@@ -99,38 +100,19 @@ export default function PuzzlePiecePage({
     locY: number,
     isCorrect: boolean
   ) => {
-    // 피드백 버블 박스
-    const bubbleRect = new fabric.Rect({
-      width: isCorrect ? 200 : 100,
-      height: isCorrect ? 50 : 35,
-      fill: isCorrect ? '#DDE2FB' : '#FFCED3',
-      originX: 'center',
-      originY: 'center',
-    });
-
-    // 피드백 버블 문구
-    const bubbleText = new fabric.Text(
-      isCorrect ? '정답입니다!' : '오답입니다!',
-      {
-        fontSize: isCorrect ? 30 : 15,
-        fill: isCorrect ? '#0000FF' : '#E5001A',
-        fontFamily: 'MaplestoryOTFBold',
-        originX: 'center',
-        originY: 'center',
-      }
-    );
-
-    const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
-      top: locY,
-      left: isCorrect ? locX - 30 : locX,
-    });
+    const feedbackBubble = new FeedbackBubble({
+      used: 'puzzlePiece',
+      locX,
+      locY,
+      isCorrect,
+    }).render();
 
     setTimeout(() => {
-      canvas.add(bubbleGroup);
+      canvas.add(feedbackBubble);
     }, 500);
 
     setTimeout(() => {
-      canvas.remove(bubbleGroup);
+      canvas.remove(feedbackBubble);
     }, 1000);
   };
 

@@ -3,6 +3,7 @@ import { Questions } from '../constants/questions';
 import { push } from '../utils/router';
 import Header from '../components/common/Header';
 import { ttsSpeech } from '../utils/tts';
+import FeedbackBubble from '../components/common/FeedbackBubble';
 
 type FindAnimalsPageProp = {
   $app: HTMLElement | null;
@@ -66,35 +67,17 @@ export default function FindAnimalsPage({
     locY: number,
     isCorrect: boolean
   ) => {
-    // 피드백 버블 박스
-    const bubbleRect = new fabric.Rect({
-      width: 300,
-      height: 60,
-      fill: isCorrect ? '#DDE2FB' : '#FFCED3',
-      originX: 'center',
-      originY: 'center',
-    });
+    const feedbackBubble = new FeedbackBubble({
+      used: 'findAnimals',
+      locX,
+      locY,
+      isCorrect,
+    }).render();
 
-    // 피드백 버블 문구
-    const bubbleText = new fabric.Text(
-      isCorrect ? '정답입니다!' : '오답입니다!',
-      {
-        fontSize: 36,
-        fill: isCorrect ? '#0000FF' : '#E5001A',
-        fontFamily: 'MaplestoryOTFBold',
-        originX: 'center',
-        originY: 'center',
-      }
-    );
-
-    const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
-      top: locY,
-      left: locX,
-    });
-    canvas.add(bubbleGroup);
+    canvas.add(feedbackBubble);
 
     setTimeout(() => {
-      canvas.remove(bubbleGroup);
+      canvas.remove(feedbackBubble);
     }, 1000);
   };
 
