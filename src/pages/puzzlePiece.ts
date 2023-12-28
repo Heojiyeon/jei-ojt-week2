@@ -159,10 +159,22 @@ export default function PuzzlePiecePage({
               onChange: canvas.renderAll.bind(canvas),
             });
             createFeedbackBubble(selectedObjLocX + 150, selectedObjLocY, false);
+
+            options.target!.selectable = false;
+            options.target!.opacity = 0.5;
           }
           selectedObjLocX = undefined;
           selectedObjLocY = undefined;
         }
+      }
+      // 올바르지 않은 경로로 이동했을 경우
+      else {
+        options.target?.animate('left', selectedObjLocX!, {
+          onChange: canvas.renderAll.bind(canvas),
+        });
+        options.target?.animate('top', selectedObjLocY!, {
+          onChange: canvas.renderAll.bind(canvas),
+        });
       }
     });
   }
