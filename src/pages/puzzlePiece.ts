@@ -85,6 +85,47 @@ export default function PuzzlePiecePage({
     onChange(options);
   });
 
+  // 정오답 피드백 컴포넌트 생성 함수
+  const createFeedbackBubble = (
+    locX: number,
+    locY: number,
+    isCorrect: boolean
+  ) => {
+    // 피드백 버블 박스
+    const bubbleRect = new fabric.Rect({
+      width: 100,
+      height: 35,
+      fill: isCorrect ? '#DDE2FB' : '#FFCED3',
+      originX: 'center',
+      originY: 'center',
+    });
+
+    // 피드백 버블 문구
+    const bubbleText = new fabric.Text(
+      isCorrect ? '정답입니다!' : '오답입니다!',
+      {
+        fontSize: 15,
+        fill: isCorrect ? '#0000FF' : '#E5001A',
+        fontFamily: 'MaplestoryOTFBold',
+        originX: 'center',
+        originY: 'center',
+      }
+    );
+
+    const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
+      top: locY,
+      left: locX,
+    });
+
+    setTimeout(() => {
+      canvas.add(bubbleGroup);
+    }, 500);
+
+    setTimeout(() => {
+      canvas.remove(bubbleGroup);
+    }, 1000);
+  };
+
   /**
    * 선택된 이미지의 위치를 저장하는 변수
    */
@@ -104,7 +145,9 @@ export default function PuzzlePiecePage({
         // 정답인 경우
         if (options.target!.get('name') === obj.get('name')) {
           setCountOfCorrect();
-          createPuzzlePieces((currentOrder += 1));
+          setTimeout(() => {
+            createPuzzlePieces((currentOrder += 1));
+          }, 1000);
         }
         // 오답인 경우
         else {
@@ -115,6 +158,7 @@ export default function PuzzlePiecePage({
             options.target?.animate('top', selectedObjLocY, {
               onChange: canvas.renderAll.bind(canvas),
             });
+            createFeedbackBubble(selectedObjLocX + 150, selectedObjLocY, false);
           }
           selectedObjLocX = undefined;
           selectedObjLocY = undefined;
