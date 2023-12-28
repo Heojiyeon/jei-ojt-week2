@@ -28,6 +28,57 @@ export default function PuzzlePiecePage({
   });
 
   /**
+   * TTS 함수
+   */
+
+  let voices: SpeechSynthesisVoice[];
+
+  function setVoiceList() {
+    voices = window.speechSynthesis.getVoices();
+  }
+
+  setVoiceList();
+
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = setVoiceList;
+  }
+
+  const ttsSpeech = (text: string) => {
+    if (!window.speechSynthesis) {
+      alert(
+        '음성 재생을 지원하지 않는 브라우저입니다. 크롬, 파이어폭스 등의 최신 브라우저를 이용하세요'
+      );
+      return;
+    }
+    const lang = 'ko-KR';
+    const utterThis = new SpeechSynthesisUtterance(text);
+
+    utterThis.onerror = function (event) {
+      console.log('error', event);
+    };
+
+    let voiceFound = false;
+
+    for (let i = 0; i < voices.length; i++) {
+      if (
+        voices[i].lang.indexOf(lang) >= 0 ||
+        voices[i].lang.indexOf(lang.replace('-', '_')) >= 0
+      ) {
+        utterThis.voice = voices[i];
+        voiceFound = true;
+      }
+    }
+    if (!voiceFound) {
+      alert('voice not found');
+      return;
+    }
+    utterThis.lang = lang;
+    utterThis.pitch = 1;
+    utterThis.rate = 1;
+    window.speechSynthesis.speak(utterThis);
+  };
+
+  /**
    * 드래그앤드랍 기능
    */
   canvas.on('object:modified', options => {
@@ -79,19 +130,38 @@ export default function PuzzlePiecePage({
       return;
     }
 
-    $puzzlePieceTitle.innerText = `${currentOrder + 1}. ${
-      PuzzleQuestions[currentOrder].title
-    }를 완성해주세요.`;
+    $puzzlePieceTitle.innerHTML = `
+    <div id='question-title-container'>
+      <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
+      <div id='question-content'>
+        ${currentOrder + 1}. ${
+          PuzzleQuestions[currentOrder].title
+        }를 찾아주세요.
+      </div>
+    </div>
+    `;
 
     $puzzlePieceRemaining.innerText = `남은 문제 수 : ${
       PuzzleQuestions.length - currentOrder
     }`;
 
+    /**
+     * TTS 기능 구현
+     */
+    const $ttsIcon = document.querySelector('#tts-icon');
+
+    $ttsIcon?.addEventListener('click', () => {
+      const $questionContent =
+        document.querySelector('#question-content')?.textContent;
+
+      ttsSpeech($questionContent!);
+    });
+
     // 문제 이미지
     PuzzleQuestions.map(puzzleQuestion => {
       // 문제 핵심 이미지
       fabric.Image.fromURL(
-        `../../images/puzzlePiece/${puzzleQuestion.answer}-cropped.png`,
+        `/images/puzzlePiece/${puzzleQuestion.answer}-cropped.png`,
         function (img) {
           img.set({
             left: 140,
@@ -110,7 +180,7 @@ export default function PuzzlePiecePage({
       // 선택지 이미지
       puzzleQuestion.selections.map((selection, idx) => {
         fabric.Image.fromURL(
-          `../../images/puzzlePiece/${selection.answer}-answer.png`,
+          `/images/puzzlePiece/${selection.answer}-answer.png`,
           function (img) {
             img.set({
               left: 530,

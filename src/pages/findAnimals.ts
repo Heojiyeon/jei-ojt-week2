@@ -26,6 +26,95 @@ export default function FindAnimalsPage({
 
   const canvas = new fabric.Canvas($questionContent);
 
+  /**
+   * TTS 함수
+   */
+
+  let voices: SpeechSynthesisVoice[];
+
+  function setVoiceList() {
+    voices = window.speechSynthesis.getVoices();
+  }
+
+  setVoiceList();
+
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = setVoiceList;
+  }
+
+  const ttsSpeech = (text: string) => {
+    if (!window.speechSynthesis) {
+      alert(
+        '음성 재생을 지원하지 않는 브라우저입니다. 크롬, 파이어폭스 등의 최신 브라우저를 이용하세요'
+      );
+      return;
+    }
+    const lang = 'ko-KR';
+    const utterThis = new SpeechSynthesisUtterance(text);
+
+    utterThis.onerror = function (event) {
+      console.log('error', event);
+    };
+
+    let voiceFound = false;
+
+    for (let i = 0; i < voices.length; i++) {
+      if (
+        voices[i].lang.indexOf(lang) >= 0 ||
+        voices[i].lang.indexOf(lang.replace('-', '_')) >= 0
+      ) {
+        utterThis.voice = voices[i];
+        voiceFound = true;
+      }
+    }
+    if (!voiceFound) {
+      alert('voice not found');
+      return;
+    }
+    utterThis.lang = lang;
+    utterThis.pitch = 1;
+    utterThis.rate = 1;
+    window.speechSynthesis.speak(utterThis);
+  };
+
+  // 정오답 피드백 컴포넌트 생성 함수
+  const createFeedbackBubble = (
+    locX: number,
+    locY: number,
+    isCorrect: boolean
+  ) => {
+    // 피드백 버블 박스
+    const bubbleRect = new fabric.Rect({
+      width: 100,
+      height: 35,
+      fill: isCorrect ? '#DDE2FB' : '#FFCED3',
+      originX: 'center',
+      originY: 'center',
+    });
+
+    // 피드백 버블 문구
+    const bubbleText = new fabric.Text(
+      isCorrect ? '정답입니다!' : '오답입니다!',
+      {
+        fontSize: 15,
+        fill: isCorrect ? '#0000FF' : '#E5001A',
+        fontFamily: 'MaplestoryOTFBold',
+        originX: 'center',
+        originY: 'center',
+      }
+    );
+
+    const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
+      top: locY,
+      left: locX,
+    });
+    canvas.add(bubbleGroup);
+
+    setTimeout(() => {
+      canvas.remove(bubbleGroup);
+    }, 1000);
+  };
+
   const createQuestions = (currentOrder: number) => {
     // 모든 문제를 풀었을 때 결과 페이지로 이동
     if (currentOrder >= Questions.length) {
@@ -33,25 +122,61 @@ export default function FindAnimalsPage({
       return;
     }
 
-    $questionTitle.innerText = `${currentOrder + 1}. ${
-      Questions[currentOrder].title
-    }를 찾아주세요.`;
+    $questionTitle.innerHTML = `
+    <div id='question-title-container'>
+      <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
+      <div id='question-content'>
+        ${currentOrder + 1}. ${Questions[currentOrder].title}를 찾아주세요.
+      </div>
+    </div>
+    `;
 
     $questionRemaining.innerText = `남은 문제 수 : ${
       Questions.length - currentOrder
     }`;
 
+    /**
+     * TTS 기능 구현
+     */
+    const $ttsIcon = document.querySelector('#tts-icon');
+
+    $ttsIcon?.addEventListener('click', () => {
+      const $questionContent =
+        document.querySelector('#question-content')?.textContent;
+
+      ttsSpeech($questionContent!);
+    });
+
     Questions[currentOrder].selections.map((question, idx) => {
       fabric.Image.fromURL(
-        `../../public/images/findAnimals/${question.title}.png`,
+        `/images/findAnimals/${question.title}.png`,
 
         function (img) {
-          img.set({ left: 100 + idx * 100, top: 220 }).scale(0.15);
+          img
+            .set({
+              left: 100 + idx * 100,
+              top: 220,
+              selectable: false,
+            })
+            .scale(0.15);
 
           img.on('mousedown', () => {
-            if (question.isCorrect) {
+            // 정답인 경우
+            if (question.isCorrect === true) {
+              createFeedbackBubble(
+                img.get('left')!,
+                img.get('top')! - 30,
+                question.isCorrect
+              );
               setCountOfCorrect();
+            } else {
+              createFeedbackBubble(
+                img.get('left')!,
+                img.get('top')! - 30,
+                question.isCorrect
+              );
             }
+
             setTimeout(() => {
               createQuestions((currentOrder += 1));
               return;
