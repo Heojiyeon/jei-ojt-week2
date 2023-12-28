@@ -49,7 +49,6 @@ export default function FindAnimalsPage({
   /**
    * TTS 함수
    */
-
   let voices: SpeechSynthesisVoice[];
 
   function setVoiceList() {
@@ -97,7 +96,9 @@ export default function FindAnimalsPage({
     window.speechSynthesis.speak(utterThis);
   };
 
-  // 정오답 피드백 컴포넌트 생성 함수
+  /**
+   * 정오답 피드백 컴포넌트 생성
+   */
   const createFeedbackBubble = (
     locX: number,
     locY: number,

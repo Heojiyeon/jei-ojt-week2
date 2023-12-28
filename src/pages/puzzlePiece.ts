@@ -11,19 +11,41 @@ export default function PuzzlePiecePage({
   $app,
   setCountOfCorrect,
 }: PuzzlePieceProp) {
+  /**
+   * 헤더 구현
+   */
+  const $header = document.querySelector('header');
+  $header!.style.marginBottom = '1rem';
+
+  const headerTitle = document.createElement('div');
+  headerTitle.innerText = 'JEI 동물 퍼즐';
+
+  const headerTitleStyles = {
+    fontSize: '1.6rem',
+    color: '#ffffff',
+    padding: '1rem',
+  };
+  Object.assign(headerTitle.style, headerTitleStyles);
+
+  $header?.appendChild(headerTitle);
+
+  /**
+   * 문제 구성 엘리먼트
+   */
   let currentOrder = 0;
 
   const $puzzlePieceTitle = document.createElement('div');
   const $puzzlePieceContent = document.createElement('canvas');
   const $puzzlePieceRemaining = document.createElement('div');
 
+  $puzzlePieceContent.setAttribute('width', '800');
+  $puzzlePieceContent.setAttribute('height', '400');
+
   $app?.appendChild($puzzlePieceTitle);
   $app?.appendChild($puzzlePieceContent);
   $app?.appendChild($puzzlePieceRemaining);
 
   const canvas = new fabric.Canvas($puzzlePieceContent, {
-    width: 800,
-    height: 500,
     selection: false,
   });
 
@@ -32,7 +54,6 @@ export default function PuzzlePiecePage({
   /**
    * TTS 함수
    */
-
   let voices: SpeechSynthesisVoice[];
 
   function setVoiceList() {
@@ -87,7 +108,9 @@ export default function PuzzlePiecePage({
     onChange(options);
   });
 
-  // 정답 이미지 컴포넌트 생성 함수
+  /**
+   * 정답 이미지 컴포넌트 생성
+   */
   const createCorrectImage = (answer: string) => {
     const correctImageRect = new fabric.Rect({
       width: 300,
@@ -99,7 +122,7 @@ export default function PuzzlePiecePage({
       img.scale(1.2);
 
       const correctImageGroup = new fabric.Group([correctImageRect, img], {
-        top: 140,
+        top: 100,
         left: 130,
       });
 
@@ -107,7 +130,9 @@ export default function PuzzlePiecePage({
     });
   };
 
-  // 정오답 피드백 컴포넌트 생성 함수
+  /**
+   *  정오답 피드백 컴포넌트 생성 함수
+   */
   const createFeedbackBubble = (
     locX: number,
     locY: number,
@@ -222,19 +247,24 @@ export default function PuzzlePiecePage({
     }
 
     $puzzlePieceTitle.innerHTML = `
-    <div id='question-title-container'>
       <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
-      <div id='question-content'>
+      &nbsp;
         ${currentOrder + 1}. ${
           PuzzleQuestions[currentOrder].title
-        }를 완성해주세요.
-      </div>
-    </div>
+        }을 완성해주세요.
     `;
+
+    $puzzlePieceTitle.style.fontSize = '24px';
+    $puzzlePieceTitle.style.marginTop = '2rem';
 
     $puzzlePieceRemaining.innerText = `남은 문제 수 : ${
       PuzzleQuestions.length - currentOrder
     }`;
+
+    $puzzlePieceRemaining.style.display = 'flex';
+    $puzzlePieceRemaining.style.justifyContent = 'flex-end';
+    $puzzlePieceRemaining.style.fontSize = '24px';
+    $puzzlePieceRemaining.style.marginRight = '1rem';
 
     /**
      * TTS 기능 구현
@@ -255,7 +285,7 @@ export default function PuzzlePiecePage({
       function (img) {
         img.set({
           left: 140,
-          top: 150,
+          top: 100,
           selectable: false,
           name: PuzzleQuestions[currentOrder].answer,
         });
@@ -275,8 +305,8 @@ export default function PuzzlePiecePage({
           img
             .set({
               width: 150,
-              left: 500,
-              top: 130 + idx * 80,
+              left: 450,
+              top: 70 + idx * 80,
               stroke: '#d4d4d4',
               strokeWidth: 1,
               name: selection.answer,
