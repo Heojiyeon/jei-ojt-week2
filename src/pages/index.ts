@@ -1,4 +1,5 @@
 import Button from '../components/common/Button';
+import Header from '../components/common/Header';
 import { push } from '../utils/router';
 
 type MainProp = {
@@ -16,6 +17,8 @@ export default function MainPage({ $app }: MainProp) {
   if (headerTitle) {
     $header?.removeChild(headerTitle);
   }
+
+  $app?.appendChild(new Header({ isMain: true }).render());
   /**
    * 메인 페이지 타이틀
    */

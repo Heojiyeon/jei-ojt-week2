@@ -1,6 +1,7 @@
 import { fabric } from 'fabric';
 import { PuzzleQuestions } from '../constants/questions';
 import { push } from '../utils/router';
+import Header from '../components/common/Header';
 
 type PuzzlePieceProp = {
   $app: HTMLElement | null;
@@ -15,20 +16,12 @@ export default function PuzzlePiecePage({
    * 헤더 구현
    */
   const $header = document.querySelector('header');
-  $header!.style.marginBottom = '1rem';
+  const header = new Header({
+    isMain: false,
+    headerContent: '동물 퍼즐',
+  }).render();
 
-  const headerTitle = document.createElement('div');
-  headerTitle.setAttribute('id', 'header-title');
-  headerTitle.innerText = 'JEI 동물 퍼즐';
-
-  const headerTitleStyles = {
-    fontSize: '1.6rem',
-    color: '#ffffff',
-    padding: '1rem',
-  };
-  Object.assign(headerTitle.style, headerTitleStyles);
-
-  $header?.appendChild(headerTitle);
+  $header!.appendChild(header);
 
   /**
    * 문제 구성 엘리먼트
