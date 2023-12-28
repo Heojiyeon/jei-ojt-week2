@@ -12,6 +12,14 @@
   position: relative;
 }
 
+header {
+  width: 800px;
+  height: 60px;
+  background-color: #e5001a;
+  margin: 0 auto;
+  position: relative;
+}
+
 body {
   font-family: MaplestoryOTFBold;
 }

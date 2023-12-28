@@ -227,7 +227,7 @@ export default function PuzzlePiecePage({
       <div id='question-content'>
         ${currentOrder + 1}. ${
           PuzzleQuestions[currentOrder].title
-        }를 찾아주세요.
+        }를 완성해주세요.
       </div>
     </div>
     `;

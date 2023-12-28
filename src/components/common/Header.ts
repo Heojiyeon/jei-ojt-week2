@@ -10,13 +10,16 @@ class Header {
 
   constructor({ isMain, headerContent }: HeaderProp) {
     this.isMain = isMain;
-    this.Header = document.createElement('div');
+    this.Header = document.createElement('header');
 
-    if (this.isMain) {
+    this.Header.setAttribute('height', '100');
+    this.Header.setAttribute('backgroundColor', 'red');
+
+    if (!this.isMain) {
       this.Header.innerText = `JEI ${headerContent}`;
     }
   }
-  render(): HTMLDivElement {
+  render(): HTMLElement {
     return this.Header;
   }
 }
