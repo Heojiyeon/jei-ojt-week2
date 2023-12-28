@@ -140,8 +140,8 @@ export default function PuzzlePiecePage({
   ) => {
     // 피드백 버블 박스
     const bubbleRect = new fabric.Rect({
-      width: 100,
-      height: 35,
+      width: isCorrect ? 200 : 100,
+      height: isCorrect ? 50 : 35,
       fill: isCorrect ? '#DDE2FB' : '#FFCED3',
       originX: 'center',
       originY: 'center',
@@ -151,7 +151,7 @@ export default function PuzzlePiecePage({
     const bubbleText = new fabric.Text(
       isCorrect ? '정답입니다!' : '오답입니다!',
       {
-        fontSize: 15,
+        fontSize: isCorrect ? 30 : 15,
         fill: isCorrect ? '#0000FF' : '#E5001A',
         fontFamily: 'MaplestoryOTFBold',
         originX: 'center',
@@ -161,7 +161,7 @@ export default function PuzzlePiecePage({
 
     const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
       top: locY,
-      left: isCorrect ? locX + 10 : locX,
+      left: isCorrect ? locX - 30 : locX,
     });
 
     setTimeout(() => {
@@ -183,6 +183,9 @@ export default function PuzzlePiecePage({
    * canvas 내 object가 수정될 때 실행되는 함수
    */
   let isCorrect: boolean | undefined;
+
+  // 문제 당 도전 횟수
+  let challenges = 3;
 
   function onChange(options: fabric.IEvent<MouseEvent>) {
     options.target!.setCoords();
@@ -209,22 +212,59 @@ export default function PuzzlePiecePage({
         }
         // 오답인 경우
         else {
-          if (selectedObjLocX !== undefined && selectedObjLocY !== undefined) {
-            options.target?.animate('left', selectedObjLocX, {
-              onChange: canvas.renderAll.bind(canvas),
-            });
-            options.target?.animate('top', selectedObjLocY, {
-              onChange: canvas.renderAll.bind(canvas),
-            });
-            createFeedbackBubble(selectedObjLocX + 150, selectedObjLocY, false);
-
+          if (challenges > 1) {
+            challenges -= 1;
+            if (
+              selectedObjLocX !== undefined &&
+              selectedObjLocY !== undefined
+            ) {
+              options.target?.animate('left', selectedObjLocX, {
+                onChange: canvas.renderAll.bind(canvas),
+              });
+              options.target?.animate('top', selectedObjLocY, {
+                onChange: canvas.renderAll.bind(canvas),
+              });
+              createFeedbackBubble(
+                selectedObjLocX + 150,
+                selectedObjLocY,
+                false
+              );
+              options.target!.selectable = false;
+              options.target!.opacity = 0.5;
+            }
+            setTimeout(() => {
+              selectedObjLocX = undefined;
+              selectedObjLocY = undefined;
+            }, 1000);
+          } else if (challenges === 1) {
+            if (
+              selectedObjLocX !== undefined &&
+              selectedObjLocY !== undefined
+            ) {
+              options.target?.animate('left', selectedObjLocX, {
+                onChange: canvas.renderAll.bind(canvas),
+              });
+              options.target?.animate('top', selectedObjLocY, {
+                onChange: canvas.renderAll.bind(canvas),
+              });
+              createFeedbackBubble(
+                selectedObjLocX + 150,
+                selectedObjLocY,
+                false
+              );
+            }
             options.target!.selectable = false;
             options.target!.opacity = 0.5;
+
+            setTimeout(() => {
+              canvas.clear();
+              createPuzzlePieces((currentOrder += 1));
+
+              isCorrect = undefined;
+              selectedObjLocX = undefined;
+              selectedObjLocY = undefined;
+            }, 1000);
           }
-          setTimeout(() => {
-            selectedObjLocX = undefined;
-            selectedObjLocY = undefined;
-          }, 1000);
         }
       }
       // 올바르지 않은 경로로 이동했을 경우
