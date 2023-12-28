@@ -10,6 +10,12 @@ export default function MainPage({ $app }: MainProp) {
     $app!.innerHTML = '';
   }
 
+  const $header = document.querySelector('header');
+  const headerTitle = document.querySelector('#header-title');
+
+  if (headerTitle) {
+    $header?.removeChild(headerTitle);
+  }
   /**
    * 메인 페이지 타이틀
    */

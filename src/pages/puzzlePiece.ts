@@ -18,6 +18,7 @@ export default function PuzzlePiecePage({
   $header!.style.marginBottom = '1rem';
 
   const headerTitle = document.createElement('div');
+  headerTitle.setAttribute('id', 'header-title');
   headerTitle.innerText = 'JEI 동물 퍼즐';
 
   const headerTitleStyles = {
