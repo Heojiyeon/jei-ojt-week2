@@ -147,6 +147,12 @@ export default function FindAnimalsPage({
       ttsSpeech($questionContent!);
     });
 
+    // 문제 당 도전 횟수
+    let challenges = 3;
+
+    // 클릭했던 선택지를 담는 변수
+    const selectedQuesionNames: string[] = [];
+
     Questions[currentOrder].selections.map((question, idx) => {
       fabric.Image.fromURL(
         `/images/findAnimals/${question.title}.png`,
@@ -157,10 +163,23 @@ export default function FindAnimalsPage({
               left: 100 + idx * 100,
               top: 220,
               selectable: false,
+              name: question.title,
             })
             .scale(0.15);
 
           img.on('mousedown', () => {
+            const selectedQuestionName = img.get('name');
+
+            //  이전에 클릭했던 이미지 핸들링
+            if (
+              selectedQuesionNames !== undefined &&
+              selectedQuesionNames.findIndex(
+                questionName => questionName === selectedQuestionName
+              ) !== -1
+            ) {
+              alert('이미 선택한 이미지에요');
+              return;
+            }
             // 정답인 경우
             if (question.isCorrect === true) {
               createFeedbackBubble(
@@ -169,18 +188,32 @@ export default function FindAnimalsPage({
                 question.isCorrect
               );
               setCountOfCorrect();
-            } else {
-              createFeedbackBubble(
-                img.get('left')!,
-                img.get('top')! - 30,
-                question.isCorrect
-              );
-            }
 
-            setTimeout(() => {
-              createQuestions((currentOrder += 1));
-              return;
-            }, 1000);
+              setTimeout(() => {
+                createQuestions((currentOrder += 1));
+                return;
+              }, 1000);
+            }
+            // 오답인 경우
+            else {
+              if (challenges > 0) {
+                challenges -= 1;
+                selectedQuesionNames.push(selectedQuestionName!);
+
+                img.set('selectable', false);
+                img.set('opacity', 0.5);
+
+                img.selectable = false;
+
+                createFeedbackBubble(
+                  img.get('left')!,
+                  img.get('top')! - 30,
+                  question.isCorrect
+                );
+              } else if (challenges === 0) {
+                createQuestions((currentOrder += 1));
+              }
+            }
           });
 
           canvas.add(img);
