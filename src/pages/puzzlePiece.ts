@@ -2,6 +2,7 @@ import { fabric } from 'fabric';
 import { PuzzleQuestions } from '../constants/questions';
 import { push } from '../utils/router';
 import Header from '../components/common/Header';
+import { ttsSpeech } from '../utils/tts';
 
 type PuzzlePieceProp = {
   $app: HTMLElement | null;
@@ -32,6 +33,7 @@ export default function PuzzlePiecePage({
   const $puzzlePieceContent = document.createElement('canvas');
   const $puzzlePieceRemaining = document.createElement('div');
 
+  $puzzlePieceTitle.setAttribute('id', 'puzzle-piece-title');
   $puzzlePieceContent.setAttribute('width', '800');
   $puzzlePieceContent.setAttribute('height', '400');
 
@@ -59,41 +61,6 @@ export default function PuzzlePiecePage({
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = setVoiceList;
   }
-
-  const ttsSpeech = (text: string) => {
-    if (!window.speechSynthesis) {
-      alert(
-        '음성 재생을 지원하지 않는 브라우저입니다. 크롬, 파이어폭스 등의 최신 브라우저를 이용하세요'
-      );
-      return;
-    }
-    const lang = 'ko-KR';
-    const utterThis = new SpeechSynthesisUtterance(text);
-
-    utterThis.onerror = function (event) {
-      console.log('error', event);
-    };
-
-    let voiceFound = false;
-
-    for (let i = 0; i < voices.length; i++) {
-      if (
-        voices[i].lang.indexOf(lang) >= 0 ||
-        voices[i].lang.indexOf(lang.replace('-', '_')) >= 0
-      ) {
-        utterThis.voice = voices[i];
-        voiceFound = true;
-      }
-    }
-    if (!voiceFound) {
-      alert('voice not found');
-      return;
-    }
-    utterThis.lang = lang;
-    utterThis.pitch = 1;
-    utterThis.rate = 1;
-    window.speechSynthesis.speak(utterThis);
-  };
 
   /**
    * 드래그앤드랍 기능
@@ -306,10 +273,9 @@ export default function PuzzlePiecePage({
     const $ttsIcon = document.querySelector('#tts-icon');
 
     $ttsIcon?.addEventListener('click', () => {
-      const $questionContent =
-        document.querySelector('#question-content')?.textContent;
+      const $puzzlePieceTitle = document.querySelector('#puzzle-piece-title');
 
-      ttsSpeech($questionContent!);
+      ttsSpeech(voices, $puzzlePieceTitle!.textContent!);
     });
 
     // 문제 이미지

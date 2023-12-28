@@ -2,6 +2,7 @@ import { fabric } from 'fabric';
 import { Questions } from '../constants/questions';
 import { push } from '../utils/router';
 import Header from '../components/common/Header';
+import { ttsSpeech } from '../utils/tts';
 
 type FindAnimalsPageProp = {
   $app: HTMLElement | null;
@@ -31,6 +32,7 @@ export default function FindAnimalsPage({
   const $questionContent = document.createElement('canvas');
   const $questionRemaining = document.createElement('div');
 
+  $questionTitle.setAttribute('id', 'question-title');
   $questionContent.setAttribute('width', '800');
   $questionContent.setAttribute('height', '400');
 
@@ -55,41 +57,6 @@ export default function FindAnimalsPage({
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = setVoiceList;
   }
-
-  const ttsSpeech = (text: string) => {
-    if (!window.speechSynthesis) {
-      alert(
-        '음성 재생을 지원하지 않는 브라우저입니다. 크롬, 파이어폭스 등의 최신 브라우저를 이용하세요'
-      );
-      return;
-    }
-    const lang = 'ko-KR';
-    const utterThis = new SpeechSynthesisUtterance(text);
-
-    utterThis.onerror = function (event) {
-      console.log('error', event);
-    };
-
-    let voiceFound = false;
-
-    for (let i = 0; i < voices.length; i++) {
-      if (
-        voices[i].lang.indexOf(lang) >= 0 ||
-        voices[i].lang.indexOf(lang.replace('-', '_')) >= 0
-      ) {
-        utterThis.voice = voices[i];
-        voiceFound = true;
-      }
-    }
-    if (!voiceFound) {
-      alert('voice not found');
-      return;
-    }
-    utterThis.lang = lang;
-    utterThis.pitch = 1;
-    utterThis.rate = 1;
-    window.speechSynthesis.speak(utterThis);
-  };
 
   /**
    * 정오답 피드백 컴포넌트 생성
@@ -173,10 +140,9 @@ export default function FindAnimalsPage({
     const $ttsIcon = document.querySelector('#tts-icon');
 
     $ttsIcon?.addEventListener('click', () => {
-      const $questionContent =
-        document.querySelector('#question-content')?.textContent;
+      const $questionTitle = document.querySelector('#question-title');
 
-      ttsSpeech($questionContent!);
+      ttsSpeech(voices, $questionTitle!.textContent!);
     });
 
     // 클릭했던 선택지를 담는 변수
