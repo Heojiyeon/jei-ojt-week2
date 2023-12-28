@@ -29,7 +29,7 @@ export default function App({ $app }: AppProp) {
       FindAnimalsPage({ $app, setCountOfCorrect });
     } else if (pathname === '/puzzle-piece') {
       $app!.innerHTML = '';
-      PuzzlePiecePage({ $app });
+      PuzzlePiecePage({ $app, setCountOfCorrect });
     } else if (pathname === '/result') {
       $app!.innerHTML = '';
       ResultPage({ $app, countOfCorrect });
