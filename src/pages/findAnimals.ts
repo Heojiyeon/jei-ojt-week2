@@ -11,14 +11,34 @@ export default function FindAnimalsPage({
   $app,
   setCountOfCorrect,
 }: FindAnimalsPageProp) {
-  let currentOrder = 0;
+  /**
+   * 헤더 구현
+   */
+  const $header = document.querySelector('header');
+  $header!.style.marginBottom = '1rem';
+
+  const headerTitle = document.createElement('div');
+  headerTitle.innerText = 'JEI 동물 찾기';
+
+  const headerTitleStyles = {
+    fontSize: '1.6rem',
+    color: '#ffffff',
+    padding: '1rem',
+  };
+  Object.assign(headerTitle.style, headerTitleStyles);
+
+  $header?.appendChild(headerTitle);
+
+  /**
+   * 문제 구성 엘리먼트
+   */
 
   const $questionTitle = document.createElement('div');
   const $questionContent = document.createElement('canvas');
   const $questionRemaining = document.createElement('div');
 
   $questionContent.setAttribute('width', '800');
-  $questionContent.setAttribute('height', '500');
+  $questionContent.setAttribute('height', '400');
 
   $app?.appendChild($questionTitle);
   $app?.appendChild($questionContent);
@@ -85,8 +105,8 @@ export default function FindAnimalsPage({
   ) => {
     // 피드백 버블 박스
     const bubbleRect = new fabric.Rect({
-      width: 100,
-      height: 35,
+      width: 300,
+      height: 60,
       fill: isCorrect ? '#DDE2FB' : '#FFCED3',
       originX: 'center',
       originY: 'center',
@@ -96,7 +116,7 @@ export default function FindAnimalsPage({
     const bubbleText = new fabric.Text(
       isCorrect ? '정답입니다!' : '오답입니다!',
       {
-        fontSize: 15,
+        fontSize: 36,
         fill: isCorrect ? '#0000FF' : '#E5001A',
         fontFamily: 'MaplestoryOTFBold',
         originX: 'center',
@@ -115,25 +135,41 @@ export default function FindAnimalsPage({
     }, 1000);
   };
 
+  let currentOrder = 0;
+
+  // 문제 당 도전 횟수
+  let challenges = 3;
+
+  const createQuetionTextContent = (currentOrder: number) => {
+    $questionTitle.innerHTML = `
+      <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
+      &nbsp;
+        ${currentOrder + 1}. ${Questions[currentOrder].title}를 찾아주세요.
+        </div>
+    </div>
+    `;
+
+    $questionTitle.style.fontSize = '24px';
+    $questionTitle.style.marginTop = '2rem';
+
+    $questionRemaining.innerText = `남은 문제 수 : ${
+      Questions.length - currentOrder - 1
+    }`;
+
+    $questionRemaining.style.display = 'flex';
+    $questionRemaining.style.justifyContent = 'flex-end';
+    $questionRemaining.style.fontSize = '24px';
+    $questionRemaining.style.marginRight = '1rem';
+  };
+
+  createQuetionTextContent(currentOrder);
+
   const createQuestions = (currentOrder: number) => {
     // 모든 문제를 풀었을 때 결과 페이지로 이동
     if (currentOrder >= Questions.length) {
       push('/result');
       return;
     }
-
-    $questionTitle.innerHTML = `
-    <div id='question-title-container'>
-      <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
-      <div id='question-content'>
-        ${currentOrder + 1}. ${Questions[currentOrder].title}를 찾아주세요.
-      </div>
-    </div>
-    `;
-
-    $questionRemaining.innerText = `남은 문제 수 : ${
-      Questions.length - currentOrder
-    }`;
 
     /**
      * TTS 기능 구현
@@ -147,9 +183,6 @@ export default function FindAnimalsPage({
       ttsSpeech($questionContent!);
     });
 
-    // 문제 당 도전 횟수
-    let challenges = 3;
-
     // 클릭했던 선택지를 담는 변수
     const selectedQuesionNames: string[] = [];
 
@@ -161,7 +194,7 @@ export default function FindAnimalsPage({
           img
             .set({
               left: 100 + idx * 160,
-              top: 200,
+              top: 130,
               selectable: false,
               name: question.title,
             })
@@ -182,11 +215,9 @@ export default function FindAnimalsPage({
             }
             // 정답인 경우
             if (question.isCorrect === true) {
-              createFeedbackBubble(
-                img.get('left')!,
-                img.get('top')! - 30,
-                question.isCorrect
-              );
+              img.scale(0.8);
+
+              createFeedbackBubble(250, 300, question.isCorrect);
               setCountOfCorrect();
 
               setTimeout(() => {
@@ -197,8 +228,10 @@ export default function FindAnimalsPage({
             }
             // 오답인 경우
             else {
-              if (challenges > 0) {
+              if (challenges > 1) {
                 challenges -= 1;
+                createQuetionTextContent(currentOrder);
+
                 selectedQuesionNames.push(selectedQuestionName!);
 
                 img.set('selectable', false);
@@ -206,14 +239,17 @@ export default function FindAnimalsPage({
 
                 img.selectable = false;
 
-                createFeedbackBubble(
-                  img.get('left')!,
-                  img.get('top')! - 30,
-                  question.isCorrect
-                );
-              } else if (challenges === 0) {
-                canvas.clear();
-                createQuestions((currentOrder += 1));
+                createFeedbackBubble(250, 300, question.isCorrect);
+              } else if (challenges === 1) {
+                img.set('selectable', false);
+                img.set('opacity', 0.5);
+
+                createQuetionTextContent(currentOrder);
+                createFeedbackBubble(250, 300, question.isCorrect);
+                setTimeout(() => {
+                  canvas.clear();
+                  createQuestions((currentOrder += 1));
+                }, 1000);
               }
             }
           });
