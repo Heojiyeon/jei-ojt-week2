@@ -146,6 +146,7 @@ export default function PuzzlePiecePage({
         if (options.target!.get('name') === obj.get('name')) {
           setCountOfCorrect();
           setTimeout(() => {
+            canvas.clear();
             createPuzzlePieces((currentOrder += 1));
           }, 1000);
         }
@@ -163,8 +164,10 @@ export default function PuzzlePiecePage({
             options.target!.selectable = false;
             options.target!.opacity = 0.5;
           }
-          selectedObjLocX = undefined;
-          selectedObjLocY = undefined;
+          setTimeout(() => {
+            selectedObjLocX = undefined;
+            selectedObjLocY = undefined;
+          }, 1000);
         }
       }
       // 올바르지 않은 경로로 이동했을 경우
@@ -214,16 +217,43 @@ export default function PuzzlePiecePage({
     });
 
     // 문제 이미지
-    PuzzleQuestions.map(puzzleQuestion => {
-      // 문제 핵심 이미지
+    // 문제 핵심 이미지
+    fabric.Image.fromURL(
+      `/images/puzzlePiece/${PuzzleQuestions[currentOrder].answer}-cropped.png`,
+      function (img) {
+        img.set({
+          left: 140,
+          top: 150,
+          selectable: false,
+          name: PuzzleQuestions[currentOrder].answer,
+        });
+
+        canvas.add(img);
+      },
+      {
+        crossOrigin: 'anonymous',
+      }
+    );
+
+    // 선택지 이미지
+    PuzzleQuestions[currentOrder].selections.map((selection, idx) => {
       fabric.Image.fromURL(
-        `/images/puzzlePiece/${puzzleQuestion.answer}-cropped.png`,
+        `/images/puzzlePiece/${selection.answer}-answer.png`,
         function (img) {
-          img.set({
-            left: 140,
-            top: 150,
-            selectable: false,
-            name: puzzleQuestion.answer,
+          img
+            .set({
+              width: 150,
+              left: 500,
+              top: 130 + idx * 80,
+              stroke: '#d4d4d4',
+              strokeWidth: 1,
+              name: selection.answer,
+            })
+            .scale(0.9);
+
+          img.on('mousedown', () => {
+            selectedObjLocX = img.get('left')!;
+            selectedObjLocY = img.get('top')!;
           });
 
           canvas.add(img);
@@ -232,30 +262,6 @@ export default function PuzzlePiecePage({
           crossOrigin: 'anonymous',
         }
       );
-
-      // 선택지 이미지
-      puzzleQuestion.selections.map((selection, idx) => {
-        fabric.Image.fromURL(
-          `/images/puzzlePiece/${selection.answer}-answer.png`,
-          function (img) {
-            img.set({
-              left: 530,
-              top: 130 + idx * 50,
-              name: selection.answer,
-            });
-
-            img.on('mousedown', () => {
-              selectedObjLocX = img.get('left')!;
-              selectedObjLocY = img.get('top')!;
-            });
-
-            canvas.add(img);
-          },
-          {
-            crossOrigin: 'anonymous',
-          }
-        );
-      });
     });
   };
 

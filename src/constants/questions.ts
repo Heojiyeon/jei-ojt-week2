@@ -4,15 +4,11 @@
 
 interface PuzzleSelection {
   answer: string;
-  locX: number;
-  locY: number;
 }
 interface PuzzleQuestion {
   order: number;
   title: string;
   answer: string;
-  answerLocX: number;
-  answerLocY: number;
   selections: PuzzleSelection[];
 }
 
@@ -21,33 +17,75 @@ export const PuzzleQuestions: PuzzleQuestion[] = [
     order: 1,
     title: '곰',
     answer: 'bear',
-    answerLocX: 150,
-    answerLocY: 150,
     selections: [
       {
         answer: 'bear',
-        locX: 530,
-        locY: 130,
       },
       {
         answer: 'cat',
-        locX: 530,
-        locY: 180,
       },
       {
         answer: 'octopus',
-        locX: 530,
-        locY: 320,
-      },
-      {
-        answer: 'rabbit',
-        locX: 530,
-        locY: 370,
       },
       {
         answer: 'squirrel',
-        locX: 530,
-        locY: 420,
+      },
+    ],
+  },
+  {
+    order: 2,
+    title: '나비',
+    answer: 'butterfly',
+    selections: [
+      {
+        answer: 'octopus',
+      },
+      {
+        answer: 'butterfly',
+      },
+      {
+        answer: 'cat',
+      },
+      {
+        answer: 'kangaroo',
+      },
+    ],
+  },
+  {
+    order: 3,
+    title: '다람쥐',
+    answer: 'squirrel',
+    selections: [
+      {
+        answer: 'rabbit',
+      },
+      {
+        answer: 'squirrel',
+      },
+      {
+        answer: 'kangaroo',
+      },
+      {
+        answer: 'cat',
+      },
+    ],
+  },
+  {
+    order: 4,
+    title: '토끼',
+    answer: 'rabbit',
+    selections: [
+      {
+        answer: 'octopus',
+      },
+      {
+        answer: 'butterfly',
+      },
+      {
+        answer: 'kangaroo',
+      },
+      {
+        answer: 'rabbit',
       },
     ],
   },
@@ -73,29 +111,25 @@ interface Question {
 export const Questions: Question[] = [
   {
     order: 1,
-    title: '고양이',
+    title: '캥거루',
     answerLocX: 270,
     answerLocY: 263,
     selections: [
       {
-        title: 'cat',
-        isCorrect: true,
-      },
-      {
-        title: 'dog',
-        isCorrect: false,
-      },
-      {
-        title: 'octopus',
-        isCorrect: false,
-      },
-      {
-        title: 'rabbit',
+        title: 'bear',
         isCorrect: false,
       },
       {
         title: 'squirrel',
         isCorrect: false,
+      },
+      {
+        title: 'butterfly',
+        isCorrect: false,
+      },
+      {
+        title: 'kangaroo',
+        isCorrect: true,
       },
     ],
   },
@@ -106,10 +140,6 @@ export const Questions: Question[] = [
     answerLocY: 272,
     selections: [
       {
-        title: 'cat',
-        isCorrect: false,
-      },
-      {
         title: 'dog',
         isCorrect: true,
       },
@@ -118,11 +148,11 @@ export const Questions: Question[] = [
         isCorrect: false,
       },
       {
-        title: 'rabbit',
+        title: 'ant',
         isCorrect: false,
       },
       {
-        title: 'squirrel',
+        title: 'bear',
         isCorrect: false,
       },
     ],
@@ -134,11 +164,11 @@ export const Questions: Question[] = [
     answerLocY: 277,
     selections: [
       {
-        title: 'cat',
+        title: 'squirrel',
         isCorrect: false,
       },
       {
-        title: 'dog',
+        title: 'crocodile',
         isCorrect: false,
       },
       {
@@ -146,51 +176,19 @@ export const Questions: Question[] = [
         isCorrect: true,
       },
       {
-        title: 'rabbit',
-        isCorrect: false,
-      },
-      {
-        title: 'squirrel',
+        title: 'ant',
         isCorrect: false,
       },
     ],
   },
   {
     order: 4,
-    title: '토끼',
-    answerLocX: 634,
-    answerLocY: 266,
-    selections: [
-      {
-        title: 'cat',
-        isCorrect: false,
-      },
-      {
-        title: 'dog',
-        isCorrect: false,
-      },
-      {
-        title: 'octopus',
-        isCorrect: false,
-      },
-      {
-        title: 'rabbit',
-        isCorrect: true,
-      },
-      {
-        title: 'squirrel',
-        isCorrect: false,
-      },
-    ],
-  },
-  {
-    order: 5,
     title: '다람쥐',
     answerLocX: 747,
     answerLocY: 276,
     selections: [
       {
-        title: 'cat',
+        title: 'butterfly',
         isCorrect: false,
       },
       {
@@ -199,10 +197,6 @@ export const Questions: Question[] = [
       },
       {
         title: 'octopus',
-        isCorrect: false,
-      },
-      {
-        title: 'rabbit',
         isCorrect: false,
       },
       {
