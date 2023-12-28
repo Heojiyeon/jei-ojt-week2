@@ -155,17 +155,17 @@ export default function FindAnimalsPage({
 
     Questions[currentOrder].selections.map((question, idx) => {
       fabric.Image.fromURL(
-        `/images/findAnimals/${question.title}.png`,
+        `/images/findAnimals/${question.title}-1.png`,
 
         function (img) {
           img
             .set({
-              left: 100 + idx * 100,
-              top: 220,
+              left: 100 + idx * 160,
+              top: 200,
               selectable: false,
               name: question.title,
             })
-            .scale(0.15);
+            .scale(0.6);
 
           img.on('mousedown', () => {
             const selectedQuestionName = img.get('name');
@@ -191,6 +191,7 @@ export default function FindAnimalsPage({
 
               setTimeout(() => {
                 createQuestions((currentOrder += 1));
+                canvas.clear();
                 return;
               }, 1000);
             }
@@ -211,6 +212,7 @@ export default function FindAnimalsPage({
                   question.isCorrect
                 );
               } else if (challenges === 0) {
+                canvas.clear();
                 createQuestions((currentOrder += 1));
               }
             }
