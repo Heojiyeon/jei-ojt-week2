@@ -46,6 +46,7 @@ export default function FindAnimalsPage({
   $app?.appendChild($questionRemaining);
 
   const canvas = new fabric.Canvas($questionContent);
+  canvas.hoverCursor = 'pointer';
 
   /**
    * TTS 함수
