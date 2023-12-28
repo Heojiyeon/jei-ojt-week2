@@ -195,6 +195,7 @@ export default function FindAnimalsPage({
                 setTimeout(() => {
                   canvas.clear();
                   createQuestions((currentOrder += 1));
+                  createQuetionTextContent(currentOrder);
                 }, 1000);
               }
             }
