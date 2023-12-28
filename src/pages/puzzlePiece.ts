@@ -27,6 +27,8 @@ export default function PuzzlePiecePage({
     selection: false,
   });
 
+  canvas.hoverCursor = 'pointer';
+
   /**
    * TTS 함수
    */
@@ -85,6 +87,26 @@ export default function PuzzlePiecePage({
     onChange(options);
   });
 
+  // 정답 이미지 컴포넌트 생성 함수
+  const createCorrectImage = (answer: string) => {
+    const correctImageRect = new fabric.Rect({
+      width: 300,
+      height: 300,
+      fill: '#ffffff',
+    });
+
+    fabric.Image.fromURL(`/images/findAnimals/${answer}-1.png`, function (img) {
+      img.scale(1.2);
+
+      const correctImageGroup = new fabric.Group([correctImageRect, img], {
+        top: 140,
+        left: 130,
+      });
+
+      canvas.add(correctImageGroup);
+    });
+  };
+
   // 정오답 피드백 컴포넌트 생성 함수
   const createFeedbackBubble = (
     locX: number,
@@ -114,7 +136,7 @@ export default function PuzzlePiecePage({
 
     const bubbleGroup = new fabric.Group([bubbleRect, bubbleText], {
       top: locY,
-      left: locX,
+      left: isCorrect ? locX + 10 : locX,
     });
 
     setTimeout(() => {
@@ -135,6 +157,8 @@ export default function PuzzlePiecePage({
   /**
    * canvas 내 object가 수정될 때 실행되는 함수
    */
+  let isCorrect: boolean | undefined;
+
   function onChange(options: fabric.IEvent<MouseEvent>) {
     options.target!.setCoords();
 
@@ -145,9 +169,17 @@ export default function PuzzlePiecePage({
         // 정답인 경우
         if (options.target!.get('name') === obj.get('name')) {
           setCountOfCorrect();
+          isCorrect = true;
+          createFeedbackBubble(160, 350, true);
+
+          createCorrectImage(options.target!.get('name')!);
+
+          options.target!.opacity = 0;
+
           setTimeout(() => {
             canvas.clear();
             createPuzzlePieces((currentOrder += 1));
+            isCorrect = undefined;
           }, 1000);
         }
         // 오답인 경우
@@ -171,7 +203,7 @@ export default function PuzzlePiecePage({
         }
       }
       // 올바르지 않은 경로로 이동했을 경우
-      else {
+      else if (isCorrect === false) {
         options.target?.animate('left', selectedObjLocX!, {
           onChange: canvas.renderAll.bind(canvas),
         });
@@ -248,6 +280,8 @@ export default function PuzzlePiecePage({
               stroke: '#d4d4d4',
               strokeWidth: 1,
               name: selection.answer,
+              hasControls: false,
+              hasBorders: false,
             })
             .scale(0.9);
 

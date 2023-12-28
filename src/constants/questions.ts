@@ -72,8 +72,8 @@ export const PuzzleQuestions: PuzzleQuestion[] = [
   },
   {
     order: 4,
-    title: '토끼',
-    answer: 'rabbit',
+    title: '문어',
+    answer: 'octopus',
     selections: [
       {
         answer: 'octopus',
