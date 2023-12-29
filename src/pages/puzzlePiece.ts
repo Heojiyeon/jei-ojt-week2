@@ -150,6 +150,7 @@ export default function PuzzlePiecePage({
           setTimeout(() => {
             canvas.clear();
             createPuzzlePieces((currentOrder += 1));
+            createPuzzlePieceTextContent(currentOrder);
             isCorrect = undefined;
           }, 1000);
         }
@@ -203,6 +204,7 @@ export default function PuzzlePiecePage({
             setTimeout(() => {
               canvas.clear();
               createPuzzlePieces((currentOrder += 1));
+              createPuzzlePieceTextContent(currentOrder);
 
               isCorrect = undefined;
               selectedObjLocX = undefined;
