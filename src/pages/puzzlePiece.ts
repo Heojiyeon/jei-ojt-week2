@@ -195,6 +195,7 @@ export default function PuzzlePiecePage({
                 selectedObjLocY,
                 false
               );
+              isCorrect = undefined;
             }
             options.target!.selectable = false;
             options.target!.opacity = 0.5;
@@ -209,9 +210,12 @@ export default function PuzzlePiecePage({
             }, 1000);
           }
         }
+      } else {
+        isCorrect = false;
       }
+
       // 올바르지 않은 경로로 이동했을 경우
-      else if (isCorrect === false) {
+      if (isCorrect === false) {
         options.target?.animate('left', selectedObjLocX!, {
           onChange: canvas.renderAll.bind(canvas),
         });
