@@ -103,7 +103,7 @@ export default function FindAnimalsPage({
     Object.assign($questionTitle.style, questionTitleStyles);
 
     $questionRemaining.innerText = `남은 문제 수 : ${
-      Questions.length - currentOrder - 1
+      Questions.length - currentOrder
     }`;
 
     const questionRemainingStyles = {
@@ -116,6 +116,8 @@ export default function FindAnimalsPage({
   };
 
   createQuetionTextContent(currentOrder);
+
+  const resetChallenges = () => (challenges = 3);
 
   const createQuestions = (currentOrder: number) => {
     // 모든 문제를 풀었을 때 결과 페이지로 이동
@@ -176,6 +178,7 @@ export default function FindAnimalsPage({
                 canvas.clear();
                 createQuestions((currentOrder += 1));
                 createQuetionTextContent(currentOrder);
+                resetChallenges();
                 return;
               }, 1000);
             }
@@ -203,6 +206,7 @@ export default function FindAnimalsPage({
                   canvas.clear();
                   createQuestions((currentOrder += 1));
                   createQuetionTextContent(currentOrder);
+                  resetChallenges();
                 }, 1000);
               }
             }
