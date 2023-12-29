@@ -1,9 +1,9 @@
 import { fabric } from 'fabric';
+import FeedbackBubble from '../components/common/FeedbackBubble';
+import Header from '../components/common/Header';
 import { Questions } from '../constants/questions';
 import { push } from '../utils/router';
-import Header from '../components/common/Header';
 import { ttsSpeech } from '../utils/tts';
-import FeedbackBubble from '../components/common/FeedbackBubble';
 
 type FindAnimalsPageProp = {
   $app: HTMLElement | null;
@@ -28,6 +28,7 @@ export default function FindAnimalsPage({
   /**
    * 문제 구성 엘리먼트
    */
+  let currentOrder = 0;
 
   const $questionTitle = document.createElement('div');
   const $questionContent = document.createElement('canvas');
@@ -41,8 +42,11 @@ export default function FindAnimalsPage({
   $app?.appendChild($questionContent);
   $app?.appendChild($questionRemaining);
 
-  const canvas = new fabric.Canvas($questionContent);
-  canvas.hoverCursor = 'pointer';
+  const canvas = new fabric.Canvas($questionContent, {
+    selection: false,
+    moveCursor: 'pointer',
+    hoverCursor: 'pointer',
+  });
 
   /**
    * TTS 함수
@@ -60,7 +64,7 @@ export default function FindAnimalsPage({
   }
 
   /**
-   * 정오답 피드백 컴포넌트 생성
+   * 정오답 피드백 컴포넌트 생성 함수
    */
   const createFeedbackBubble = (
     locX: number,
@@ -81,18 +85,18 @@ export default function FindAnimalsPage({
     }, 1000);
   };
 
-  let currentOrder = 0;
-
   // 문제 당 도전 횟수
   let challenges = 3;
+  const resetChallenges = () => (challenges = 3);
 
+  /**
+   * 문제 제목 및 남은 문제 수 태그 생성 함수
+   */
   const createQuetionTextContent = (currentOrder: number) => {
     $questionTitle.innerHTML = `
       <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
       &nbsp;
         ${currentOrder + 1}. ${Questions[currentOrder].title}를 찾아주세요.
-        </div>
-    </div>
     `;
 
     const questionTitleStyles = {
@@ -117,8 +121,9 @@ export default function FindAnimalsPage({
 
   createQuetionTextContent(currentOrder);
 
-  const resetChallenges = () => (challenges = 3);
-
+  /**
+   * 문제 생성 함수
+   */
   const createQuestions = (currentOrder: number) => {
     // 모든 문제를 풀었을 때 결과 페이지로 이동
     if (currentOrder >= Questions.length) {

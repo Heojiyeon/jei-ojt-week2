@@ -1,9 +1,9 @@
 import { fabric } from 'fabric';
+import FeedbackBubble from '../components/common/FeedbackBubble';
+import Header from '../components/common/Header';
 import { PuzzleQuestions } from '../constants/questions';
 import { push } from '../utils/router';
-import Header from '../components/common/Header';
 import { ttsSpeech } from '../utils/tts';
-import FeedbackBubble from '../components/common/FeedbackBubble';
 
 type PuzzlePieceProp = {
   $app: HTMLElement | null;
@@ -44,9 +44,9 @@ export default function PuzzlePiecePage({
 
   const canvas = new fabric.Canvas($puzzlePieceContent, {
     selection: false,
+    moveCursor: 'pointer',
+    hoverCursor: 'pointer',
   });
-
-  canvas.hoverCursor = 'pointer';
 
   /**
    * TTS 함수
@@ -226,13 +226,10 @@ export default function PuzzlePiecePage({
     });
   }
 
-  const createPuzzlePieces = (currentOrder: number) => {
-    // 모든 문제를 풀었을 때 결과 페이지로 이동
-    if (currentOrder >= PuzzleQuestions.length) {
-      push('/result');
-      return;
-    }
-
+  /**
+   * 문제 제목 및 남은 문제 수 태그 생성 함수
+   */
+  const createPuzzlePieceTextContent = (currentOrder: number) => {
     $puzzlePieceTitle.innerHTML = `
       <img src=\'/images/speech.png'\ alt='tts-icon' id='tts-icon' />
       &nbsp;
@@ -241,17 +238,36 @@ export default function PuzzlePiecePage({
         }을 완성해주세요.
     `;
 
-    $puzzlePieceTitle.style.fontSize = '24px';
-    $puzzlePieceTitle.style.marginTop = '2rem';
+    const puzzlePieceTitleStyles = {
+      fontSize: '24px',
+      marginTop: '2rem',
+    };
+    Object.assign($puzzlePieceTitle.style, puzzlePieceTitleStyles);
 
     $puzzlePieceRemaining.innerText = `남은 문제 수 : ${
       PuzzleQuestions.length - currentOrder
     }`;
 
-    $puzzlePieceRemaining.style.display = 'flex';
-    $puzzlePieceRemaining.style.justifyContent = 'flex-end';
-    $puzzlePieceRemaining.style.fontSize = '24px';
-    $puzzlePieceRemaining.style.marginRight = '1rem';
+    const puzzlePieceRemainingStyles = {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      fontSize: '24px',
+      marginRight: '1rem',
+    };
+    Object.assign($puzzlePieceRemaining.style, puzzlePieceRemainingStyles);
+  };
+
+  createPuzzlePieceTextContent(currentOrder);
+
+  /**
+   * 문제 생성 함수
+   */
+  const createPuzzlePieces = (currentOrder: number) => {
+    // 모든 문제를 풀었을 때 결과 페이지로 이동
+    if (currentOrder >= PuzzleQuestions.length) {
+      push('/result');
+      return;
+    }
 
     /**
      * TTS 기능 구현
@@ -264,7 +280,10 @@ export default function PuzzlePiecePage({
       ttsSpeech(voices, $puzzlePieceTitle!.textContent!);
     });
 
-    // 문제 이미지
+    /**
+     *  문제 이미지 생성
+     */
+
     // 문제 핵심 이미지
     fabric.Image.fromURL(
       `/images/puzzlePiece/${PuzzleQuestions[currentOrder].answer}-cropped.png`,
