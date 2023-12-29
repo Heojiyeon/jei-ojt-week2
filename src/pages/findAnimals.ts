@@ -95,17 +95,24 @@ export default function FindAnimalsPage({
     </div>
     `;
 
-    $questionTitle.style.fontSize = '24px';
-    $questionTitle.style.marginTop = '2rem';
+    const questionTitleStyles = {
+      fontSize: '24px',
+      marginTop: '2rem',
+    };
+
+    Object.assign($questionTitle.style, questionTitleStyles);
 
     $questionRemaining.innerText = `남은 문제 수 : ${
       Questions.length - currentOrder - 1
     }`;
 
-    $questionRemaining.style.display = 'flex';
-    $questionRemaining.style.justifyContent = 'flex-end';
-    $questionRemaining.style.fontSize = '24px';
-    $questionRemaining.style.marginRight = '1rem';
+    const questionRemainingStyles = {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      fontSize: '24px',
+      marginRight: '1rem',
+    };
+    Object.assign($questionRemaining.style, questionRemainingStyles);
   };
 
   createQuetionTextContent(currentOrder);
